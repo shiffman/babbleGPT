@@ -1,0 +1,7 @@
+data/*.txt
+runs/
+node_modules/
+model-gpt2-srs
+tokenizer/
+baby*
+.DS_Store

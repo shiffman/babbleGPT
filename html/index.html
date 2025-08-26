@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BabbleGPT</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <h1>BabbleGPT</h1>
+      </header>
+
+      <!-- Loading interface shown while model loads -->
+      <section id="loader" class="panel">
+        <label>Loading model…</label>
+        <div class="progress-wrap">
+          <!-- Animated progress bar -->
+          <div id="progress" class="progress"></div>
+        </div>
+        <!-- Status text -->
+        <div id="status" class="status">initializing…</div>
+      </section>
+
+      <section class="panel">
+        <label for="prompt">Prompt</label>
+        <!-- Prompt -->
+        <textarea id="prompt" rows="5">My first word is</textarea>
+        <!-- Generate button -->
+        <button id="generate" disabled>Generate</button>
+      </section>
+
+      <section class="panel">
+        <label>Output</label>
+        <!-- text area to display generated text -->
+        <pre id="output" class="output"></pre>
+      </section>
+    </div>
+
+    <script src="sketch.js" defer></script>
+  </body>
+</html>
