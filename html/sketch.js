@@ -23,14 +23,17 @@ async function init() {
     // import Transformers.js library from CDN
     const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.4.0');
 
-    // Configure Transformers.js environment for local models
-    env.allowLocalModels = true;
-    env.allowRemoteModels = false;
-    env.localModelPath = baseURL;
+    // If you want to use a local model, set these flags
+    // env.allowLocalModels = true;
+    // env.allowRemoteModels = false;
+    // env.localModelPath = baseURL;
 
     // Specify which model to load
-    // Change this to match your exported model folder name
-    const modelId = 'models/model-byte-processing-course';
+    // This can be local!
+    // const modelId = 'models/model-byte-coding-train-transcripts';
+
+    // Or if you upload to HF!
+    const modelId = 'shiffman/gpt2-coding-train-transcripts';
 
     // Show loading status to user
     setStatus(status, progressBar, 'initializing…', null);

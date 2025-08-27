@@ -9,8 +9,11 @@ const arg = process.argv[2];
 
 // Configure Transformers.js to use local models only
 env.localModelPath = here;
-// Don't download models from Hugging Face Hub
 env.allowRemoteModels = false;
+
+// (But you could also use a remote model)
+// env.allowRemoteModels = true;
+// const arg = 'gpt2'; // Use Hugging Face's hosted GPT-2
 
 const pipe = await pipeline('text-generation', arg);
 

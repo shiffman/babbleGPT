@@ -15,19 +15,23 @@ async function setup() {
   // This gives us access to the pipeline function and environment settings
   const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.4.0');
 
-  // Configure Transformers.js to use our local ONNX models
-  env.allowLocalModels = true;
-  // Set the base URL where our model files are located
-  env.localModelPath = new URL('./', window.location.href).href;
+  // If you want to use a local model, set these flags
+  // env.allowLocalModels = true;
+  // env.allowRemoteModels = false;
+  // env.localModelPath = baseURL;
+
+  // Specify which model to load
+  // This can be local!
+  // const modelId = 'models/model-byte-coding-train-transcripts';
+
+  // Or if you upload to HF!
+  const modelId = 'shiffman/gpt2-coding-train-transcripts';
 
   // Automatically choose the available device for inference
   const device = navigator.gpu ? 'webgpu' : 'wasm';
 
-  // Change this to match your exported model folder name
-  const localModel = 'models/model-gpt2-processing-course';
-
   // Create the text generation pipeline using the local model
-  generator = await pipeline('text-generation', localModel, {
+  generator = await pipeline('text-generation', modelId, {
     device, // Use 'webgpu' or 'wasm' based on browser support
     dtype: 'fp32', // 32-bit floating point
     progress_callback: logProgress,

@@ -84,26 +84,41 @@ model = GPT2LMHeadModel(cfg)
 # =============================================================================
 # DATA LOADING AND PREPROCESSING
 # =============================================================================
+# Fixed training block length (must be ≤ model context window)
+block_size = 512
+
+# Match tokenizer’s declared max length to our block size
+tok.model_max_length = block_size
+
 # Load your text file using Hugging Face datasets
 # The "text" loader reads plain text files line by line
 ds = load_dataset("text", data_files={"train": args.data})
+
 # Split into 90% training, 10% evaluation for monitoring training progress
 split = ds["train"].train_test_split(test_size=0.1, seed=42)
 
-# Convert text to tokens (numbers) that the model can process
-# We add an end-of-sequence token after each line to help the model learn document boundaries
+# Tokenize and split long examples into contiguous blocks of length block_size
+# return_overflowing_tokens=True emits multiple chunks per long example
+# truncation=True enforces max_length per emitted chunk
 def tok_fn(batch):
-    return {
-        "input_ids": [
-            # Convert each text example to token IDs and add EOS token
-            tok.encode(x, add_special_tokens=False) + [tok.eos_token_id]
-            for x in batch["text"]
-        ]
-    }
+    enc = tok(
+        batch["text"],
+        add_special_tokens=False,
+        truncation=True,
+        max_length=block_size,
+        return_overflowing_tokens=True,
+    )
+    # One output row per chunk, already sized to block_size
+    return {"input_ids": enc["input_ids"]}
 
 # Apply tokenization to both training and validation splits
 # remove_columns removes the original text, keeping only token IDs
-tokd = split.map(tok_fn, batched=True, remove_columns=["text"], load_from_cache_file=False)
+tokd = split.map(
+    tok_fn,
+    batched=True,
+    remove_columns=["text"],
+    load_from_cache_file=False,
+)
 
 # =============================================================================
 # TEXT CHUNKING
@@ -150,7 +165,7 @@ args = TrainingArguments(
     lr_scheduler_type="cosine",       # Learning rate decreases over time following cosine curve
     warmup_ratio=0.1,                 # Start with low learning rate for first 10% of training
     weight_decay=0.01,                # Regularization to prevent overfitting
-    num_train_epochs=100,             # How many times to go through the entire dataset
+    num_train_epochs=15,               # How many times to go through the entire dataset
     logging_strategy="steps",         # Log training metrics every N steps
     logging_first_step=True,          # Log the very first training step
     logging_steps=1,                  # Log every step (useful for monitoring)

@@ -1,7 +1,9 @@
-data/*.txt
+data/** 
+!data/sample.txt
 runs/
 node_modules/
-model-gpt2-srs
+model-byte*
+model-gpt2*
 tokenizer/
 baby*
 .DS_Store
