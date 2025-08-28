@@ -40,7 +40,12 @@ pip install -U torch transformers datasets tokenizers "optimum[onnxruntime]" onn
 python scripts/build_tokenizer.py --input data/sample.txt
 python scripts/train_baby_byte.py --data data/sample.txt
 ./scripts/export_js.sh byte sample
-cp -r node-js/model-byte-sample html/models/
+
+# Host your model on Hugging Face
+huggingface-cli login
+python scripts/upload_hf.py --source node-js/model-byte-sample --repo-id yourusername/baby-gpt-sample
+
+# Run web server for demo
 python -m http.server -d html
 ```
 
@@ -113,9 +118,9 @@ Convert your PyTorch model to ONNX format for JavaScript:
 # This creates: node-js/model-byte-model-name/ or node-js/model-gpt2-model-name/
 ```
 
-### Share Your Model
+### Host Your Model
 
-You can upload your trained model to Hugging Face Hub to share it with others:
+Upload your trained model to Hugging Face Hub to host it for client JS:
 
 ```bash
 # First, authenticate with Hugging Face (do this once)
@@ -124,17 +129,15 @@ huggingface-cli login
 # Upload your ONNX model (after converting with export_js.sh)
 python scripts/upload_hf.py --source node-js/model-gpt2-yourmodel --repo-id yourusername/baby-gpt-yourmodel
 
-# Make it private (optional)
+# It'll be public, you can make it private (but it won't work from your sketch)
 python scripts/upload_hf.py --source node-js/model-byte-shakespeare --repo-id yourusername/baby-gpt-shakespeare --private
 ```
 
-Your model will be available at `https://huggingface.co/yourusername/baby-gpt-yourmodel` and can be loaded by others using `GPT2LMHeadModel.from_pretrained('yourusername/baby-gpt-yourmodel')`.
+Your model will be available at `https://huggingface.co/yourusername/baby-gpt-yourmodel`.
 
 ### Run in JavaScript
 
-Now you can use your model in JavaScript!
-
-#### Option A: Node.js
+#### Node.js (Local Files)
 
 ```bash
 # Navigate to js directory
@@ -143,44 +146,47 @@ cd node-js
 # Install JavaScript dependencies
 npm install
 
-# Run with your model
+# Run with your local model files
 node index.js model-byte-model-name
 # or
 node index.js model-gpt2-model-name
 ```
 
-#### Web Browser (Vanilla JS)
+#### Client-side JS
+
+The HTML and p5.js demos are configured to load models from Hugging Face Hub by default. Simply update the model ID in the code:
+
+**Vanilla JS (html/sketch.js):**
+
+```js
+// Change this line to your uploaded model:
+const modelId = 'yourusername/baby-gpt-yourmodel';
+```
+
+**p5.js (p5/sketch.js):**
+
+```js
+// Change this line to your uploaded model:
+const modelId = 'yourusername/baby-gpt-yourmodel';
+```
+
+Local server:
+
+```bash
+python -m http.server -d html
+# or for p5.js version:
+python -m http.server -d p5
+```
+
+#### Local Model Files
+
+If you prefer to use local model files instead of Hugging Face Hub:
 
 ```bash
 # Copy your model to the html directory
-# Either one:
-cp -r node-js/model-byte-model-name html/models/
-cp -r node-js/model-gpt2-model-name html/models/
-```
+cp -r node-js/model-byte-yourmodel html/models/
 
-Edit html/sketch.js and change this line:
-
-```js
-// Either
-const modelId = 'models/model-gpt2-model-name';
-const modelId = 'models/model-byte-model-name';
-```
-
-#### With p5.js
-
-```bash
-# Copy your model to the p5 directory
-# Either one:
-cp -r node-js/model-byte-model-name p5/models/
-cp -r node-js/model-gpt2-model-name p5/models/
-```
-
-Edit p5/sketch.js and change this line:
-
-```js
-// Either
-const localModel = 'models/model-gpt2-model-name';
-const localModel = 'models/model-byte-model-name';
+# Update the code to use local models (see the comments in sketch.js files)
 ```
 
 ## Parameters

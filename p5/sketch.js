@@ -15,17 +15,15 @@ async function setup() {
   // This gives us access to the pipeline function and environment settings
   const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.4.0');
 
-  // If you want to use a local model, set these flags
+  // OPTION 1: Use a model hosted on Hugging Face Hub
+  const modelId = 'shiffman/gpt2-coding-train-transcripts';
+
+  // OPTION 2: Use a local model
+  // Copy model files via finder : cp -r node-js/model-byte-yourmodel p5/models/
   // env.allowLocalModels = true;
   // env.allowRemoteModels = false;
-  // env.localModelPath = baseURL;
-
-  // Specify which model to load
-  // This can be local!
-  // const modelId = 'models/model-byte-coding-train-transcripts';
-
-  // Or if you upload to HF!
-  const modelId = 'shiffman/gpt2-coding-train-transcripts';
+  // env.localModelPath = './';
+  // const modelId = 'models/model-byte-yourmodel';
 
   // Automatically choose the available device for inference
   const device = navigator.gpu ? 'webgpu' : 'wasm';
